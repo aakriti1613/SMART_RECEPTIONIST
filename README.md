@@ -23,7 +23,8 @@ To run this project, you'll need the following Python libraries and resources:
     pip install scikit-learn
     pip install winspeech
 
-Additionally, download the following files:
+Additionally, download the following files: 
+Link: https://drive.google.com/drive/folders/1NimBrFTJvn1gA8uPB7xURspzsVSkuzWH?usp=sharing
     1. shape_predictor_68_face_landmarks.dat
     2. dlib_face_recognition_resnet_model_v1.dat
 Make sure to place these files in the correct directory for face recognition to function.
