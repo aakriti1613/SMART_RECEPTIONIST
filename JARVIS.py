@@ -182,7 +182,7 @@ def chat(query):
     from groq import Groq
     chatStr=""
     print(f'JARVIS:{chatStr}')
-    client = Groq(api_key="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")
+    client = Groq(api_key=" ") #your api key
     completion = client.chat.completions.create(
         model="llama3-70b-8192",
         messages=[
@@ -416,7 +416,7 @@ if "wake up".lower() in wake_up.lower():
             chatStr=""
 
         elif  "weather".lower() in text.lower():
-            API_KEY = 'd7775f3054284fd6a8a143400242607'
+            API_KEY = ''#your api key
             BASE_URL = 'https://api.weatherapi.com/v1/current.json?key=d7775f3054284fd6a8a143400242607&q=London&days=1&aqi=yes&alerts=yes'
             city =city(text)
             weather_data = get_weather(city,API_KEY)
@@ -424,7 +424,7 @@ if "wake up".lower() in wake_up.lower():
                 say(f"temperature there is {weather_data['current']['temp_c']} degree celcius and the weather is {weather_data['current']['condition']['text']}.")
     
         elif "news".lower() in text.lower():
-            News_apikey='86195554940c494894989551eea27ecc'  
+            News_apikey=''  #your api key
             url = (f'https://newsapi.org/v2/top-headlines?country=in&apiKey={News_apikey}')
             news_headlines(url,News_apikey)
             
