@@ -29,6 +29,8 @@ Link: https://drive.google.com/drive/folders/1NimBrFTJvn1gA8uPB7xURspzsVSkuzWH?u
     2. dlib_face_recognition_resnet_model_v1.dat
 Make sure to place these files in the correct directory for face recognition to function.
 
+AND ADD your speech , weather and news API keys to access these features.
+
 FILES:
     1. JARVIS.py: Main program for running the smart receptionist.
     2. user_data.json: Stores visitor data.
