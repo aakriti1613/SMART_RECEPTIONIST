@@ -129,13 +129,14 @@ def add_info(text):
 #Welcoming function:takes,feed and retrieve user data                      
 def Welcome():
     say("Hello!What is your name?")
+    print("JARVIS:Hello!What is your name?")
     intro = takeQuery()
     name=process_name(intro)
     if name:
         visitor =check_name(name)
-        svm_model,scaler=train_svm_model()
-        predicted_name=recognize(svm_model,scaler)
         if visitor:
+            svm_model,scaler=train_svm_model()
+            predicted_name=recognize(svm_model,scaler)
             if name==predicted_name:
                 visitor['visits'] += 1
                 print(f"JARVIS:Welcome back,{name}! This is your visit number {visitor['visits']} Your last visit was on {visitor['last_visit']}.")
@@ -147,21 +148,24 @@ def Welcome():
             else:
                 # say(f'Welcome back!{predicted_name},i do not have any information stored about you.')
                 say("Wrong identity.Please check the name given.Jarvis inactivated.")
-                print("SYSTEM:Please check the name given.Jarvis inactivated.")
+                print("SYSTEM:Please check the name given.")
+                print("JARVIS INACTIVATED")
                 exit()
         else:
             print(f"JARVIS:Hello,{name}! Nice to meet you.Would you like to share more information about you..!?")
-            say(f"Hello,{name}! Nice to meet you.Would you like to share more information about you..!?")
+            say(f"Hello {name} Nice to meet you, To recognize you next time, I need to capture your face. Please sit up straight and ensure there's a clear background ")
+            extract_features()
+            say("Please share more information about you for example name, age,Works at")
             text=takeQuery()
             info = add_info(text)
             if info:
                 store_user_data(name,info)
                 say("information stored")
-                extract_features()         
+                         
                     
     else:
-        print("jARVIS:No name recognized in the speech.")
-        say("No name recognized in the speech.")
+        print("JARVIS:No name recognized in the speech.")
+        say("No name recognized in the speech")
 
 
 #function to open sites
@@ -174,7 +178,7 @@ def open_sites():
                 webbrowser.open(site[1])
     except:
         print("JARVIS:sorry!!I don't have access to it.Contact Akreeti,my owner,if you want to add this functionality.")
-        say("sorry!!I don't have access to it.Contact Akreeti,my owner,if you want to add this functionality.")
+        say("sorry I don't have access to it Contact Akreeti my owner if you want to add this functionality")
 
 
 #chit-chat with jarvis
@@ -182,7 +186,7 @@ def chat(query):
     from groq import Groq
     chatStr=""
     print(f'JARVIS:{chatStr}')
-    client = Groq(api_key=" ") #your api key
+    client = Groq(api_key="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")
     completion = client.chat.completions.create(
         model="llama3-70b-8192",
         messages=[
@@ -280,8 +284,10 @@ def extract_features(csv_file='live_facial_features.csv', stream_duration=20, nu
         writer = csv.writer(csvfile)
         if not file_exists:
             writer.writerow(columns)
-
-        person_name = input("Enter your name: ")
+        print("SYSTEM: Please tell your name.")
+        say("Please tell you name")
+        intro = takeQuery()
+        person_name=process_name(intro)
         descriptors = []
         
         while len(descriptors) < num_samples and (time.time() - start_time) < stream_duration:
@@ -308,6 +314,10 @@ def extract_features(csv_file='live_facial_features.csv', stream_duration=20, nu
             avg_descriptor = np.mean(descriptors, axis=0)
             row = [person_name] + avg_descriptor.tolist()
             writer.writerow(row)
+            say("Done")
+        else:
+            print("no face detected, trying once again!")
+            extract_features()
 
     video_capture.release()
     cv2.destroyAllWindows()
@@ -375,7 +385,7 @@ def recognize(svm_model,scaler, csv_file='live_facial_features.csv'):
                    #***********||JARVIS ON DUTY||****************
 print("Aakruti's programmed JARVIS")
 say("Jarvis is sleeping, call 'wake up Jarvis' to wake him up")
-print("SYSTEM:Hey there,Jarvis is sleeping.A tip for you:call 'wake up Jarvis' to wake him up")
+print("SYSTEM:Hey there,Jarvis is sleeping.\nA tip for you:call 'wake up Jarvis' to wake him up")
 print("listening...")
 wake_up=takeQuery()
 
@@ -409,14 +419,14 @@ if "wake up".lower() in wake_up.lower():
             svm_model,scaler = train_svm_model()
             recognize(svm_model,scaler)
 
-        elif "Jarvis Quit".lower() in text.lower():
+        elif "Quit chat".lower() in text.lower():
             exit()
 
         elif "reset chat".lower() in text.lower():
             chatStr=""
 
         elif  "weather".lower() in text.lower():
-            API_KEY = ''#your api key
+            API_KEY = 'd7775f3054284fd6a8a143400242607'
             BASE_URL = 'https://api.weatherapi.com/v1/current.json?key=d7775f3054284fd6a8a143400242607&q=London&days=1&aqi=yes&alerts=yes'
             city =city(text)
             weather_data = get_weather(city,API_KEY)
@@ -424,7 +434,7 @@ if "wake up".lower() in wake_up.lower():
                 say(f"temperature there is {weather_data['current']['temp_c']} degree celcius and the weather is {weather_data['current']['condition']['text']}.")
     
         elif "news".lower() in text.lower():
-            News_apikey=''  #your api key
+            News_apikey='86195554940c494894989551eea27ecc'  
             url = (f'https://newsapi.org/v2/top-headlines?country=in&apiKey={News_apikey}')
             news_headlines(url,News_apikey)
             
@@ -433,8 +443,8 @@ if "wake up".lower() in wake_up.lower():
 
 else:
     say("Jarvis is sleeping, call 'wake up Jarvis' to wake him up")           
-    print("SYSTEM:You need to say 'wake up Jarvis' to wake him up otherwise you cannot proceed.\n System switched off.Please restart.")
-       
+    print("SYSTEM:You need to say 'wake up Jarvis' to wake him up otherwise you cannot proceed.")
+    print("SYSTEM SWITCHED OFF. PLEASE RESTART.")  
     
 
 
