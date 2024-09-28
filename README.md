@@ -12,16 +12,7 @@ FEATURES OF THE MODEL:
 
 REQUIREMENTS:
 To run this project, you'll need the following Python libraries and resources:
-    pip install speechrecognition
-    pip install pyttsx3
-    pip install webbrowser
-    pip install spacy
-    pip install opencv-python
-    pip install dlib
-    pip install numpy
-    pip install pandas
-    pip install scikit-learn
-    pip install winspeech
+   run requirements.txt
 
 Additionally, download the following files: 
 Link: https://drive.google.com/drive/folders/1NimBrFTJvn1gA8uPB7xURspzsVSkuzWH?usp=sharing
