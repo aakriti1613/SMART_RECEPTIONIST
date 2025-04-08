@@ -1,4 +1,4 @@
-            #*********||IMPORTING MODULES FOR SPEECH RECOGNITION||**************
+                         #*********||IMPORTING MODULES FOR SPEECH RECOGNITION||**************
 import speech_recognition as sr
 import os 
 import pyttsx3
@@ -7,13 +7,14 @@ import datetime
 import json
 import spacy
 import win32com.client
+import requests
 
-            #*********||IMPORTING MODULES FOR FACE RECOGNITION||**************
+
+                         #*********||IMPORTING MODULES FOR FACE RECOGNITION||**************
 import cv2
 import dlib
 import numpy as np
 import csv
-import os
 import pandas as pd
 import time
 from sklearn.preprocessing import StandardScaler
@@ -57,7 +58,7 @@ def takeQuery():
         
 
 # JSON file to store user data
-USER_DATABASE ='user_data.json'
+USER_DATABASE ='JARVIS/user_data.json'
 
 
 #loads user data in json file
@@ -73,7 +74,7 @@ def load_user_data():
 
 #feeds user data in the json file
 def save_user_data(data):
-    with open("user_data.json", "w") as file:
+    with open("JARVIS/user_data.json", "w") as file:
         json.dump(data, file)
 
 
@@ -263,15 +264,71 @@ def news_headlines(url,News_apikey):
         print('JARVIS:Failed to retrieve news:', responses.status_code)
 
 
+
+FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSd7m-VKGHfI7w6N8agGII16-LKPW6MFnrw2z7mU9vsJst889Q/viewform?usp=pp_url&entry.2005620554=Akriti+Jha&entry.895685996=Yes&entry.1065046570=S-198,+Pandav+Nagar,+Delhi-92&entry.1166974658=8826001640"
+FORM_FIELDS = {
+    "name": "entry.2005620554",  
+    "age_confirmation": "entry.895685996",
+    "address": "entry.1065046570",
+    "phone_number": "entry.1166974658"
+}
+
+def fill_form():
+    say("Let's fill the form. Please provide the required details.")
+
+    # Get user input
+    say("What is your name?")
+    name = takeQuery()
+
+    say("Are you above 18? Please say Yes or No.")
+    age_response = takeQuery().lower()
+    age_confirmation = "Yes" if "yes" in age_response else "No"
+
+    say("Please provide your address.")
+    address = takeQuery()
+
+    say("Please provide your phone number.")
+    phone_number = takeQuery()
+
+    # Process and extract entities using NLP
+    extracted_info = {
+        "name": process_name(name),
+        "age_confirmation": age_confirmation,
+        "address": process_info(address),
+        "phone_number": process_info(phone_number)
+    }
+
+    # Prepare the payload
+    form_data = {
+        FORM_FIELDS["name"]: extracted_info["name"],
+        FORM_FIELDS["age_confirmation"]: extracted_info["age_confirmation"],
+        FORM_FIELDS["address"]: extracted_info["address"],
+        FORM_FIELDS["phone_number"]: extracted_info["phone_number"]
+    }
+
+    submission_url = FORM_URL + "?" + "&".join([f"{key}={value}" for key, value in form_data.items()])
+
+    # Send GET request to submit form
+    response = requests.get(submission_url)
+
+    if response.status_code == 200:
+        say("Form submitted successfully!")
+        print("JARVIS: Form submitted successfully!")
+    else:
+        say("There was an issue submitting the form. Please try again.")
+        print(f"JARVIS: Error {response.status_code} - Unable to submit the form.")
+
+
+
              #***************||FACE RECOGNITION FUNCTIONS||****************
 
 # Initialize dlib's face detector, shape predictor, and face recognition model
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
-face_reco_model = dlib.face_recognition_model_v1('dlib_face_recognition_resnet_model_v1.dat')
+predictor = dlib.shape_predictor('JARVIS/shape_predictor_68_face_landmarks.dat')
+face_reco_model = dlib.face_recognition_model_v1('JARVIS/dlib_face_recognition_resnet_model_v1.dat')
 
 #Extracting 128 facial featuresq
-def extract_features(csv_file='live_facial_features.csv', stream_duration=20, num_samples=5):
+def extract_features(csv_file='JARVIS/live_facial_features.csv', stream_duration=20, num_samples=5):
     video_capture = cv2.VideoCapture(0)
     video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -324,7 +381,7 @@ def extract_features(csv_file='live_facial_features.csv', stream_duration=20, nu
 
 
 #Training svm model to predict the faces
-def train_svm_model(csv_file='live_facial_features.csv'):
+def train_svm_model(csv_file='JARVIS/live_facial_features.csv'):
     if not os.path.isfile(csv_file):
         print("CSV file not found.Please capture face features first.")
         return None,None
@@ -344,7 +401,7 @@ def train_svm_model(csv_file='live_facial_features.csv'):
 
 
 #Taking attendance/Recognizing face using live features
-def recognize(svm_model,scaler, csv_file='live_facial_features.csv'):
+def recognize(svm_model,scaler, csv_file='JARVIS/live_facial_features.csv'):
     if not svm_model:
         print("KNN model and scaler are not initialized.")
         return
@@ -396,7 +453,7 @@ if "wake up".lower() in wake_up.lower():
     while True:
         print("I am listening...")
         text=takeQuery()
-
+           
         if count==0:
             Welcome()
             count+=1
@@ -406,6 +463,9 @@ if "wake up".lower() in wake_up.lower():
 
         elif "your girlfriend".lower() in text.lower():
             say("hehehe,Alexxaa..!!")
+        
+        elif "fill a form".lower() in text.lower():
+            fill_form()
  
         elif "the time" in text:
             strfTime=datetime.datetime.now().strftime("%H:%M:%S")
@@ -415,7 +475,7 @@ if "wake up".lower() in wake_up.lower():
         elif "capture my facial features".lower() in text.lower():
             extract_features()
 
-        elif "tell me my name".lower() in text.lower():
+        elif "tell my name".lower() in text.lower():
             svm_model,scaler = train_svm_model()
             recognize(svm_model,scaler)
 
@@ -424,6 +484,11 @@ if "wake up".lower() in wake_up.lower():
 
         elif "reset chat".lower() in text.lower():
             chatStr=""
+
+        elif "Store this information for visitors".lower() in text.lower():
+            say("Yes tell me")
+            temp = takeQuery()
+            say("Okay information stored")
 
         elif  "weather".lower() in text.lower():
             API_KEY = 'd7775f3054284fd6a8a143400242607'
@@ -437,7 +502,7 @@ if "wake up".lower() in wake_up.lower():
             News_apikey='86195554940c494894989551eea27ecc'  
             url = (f'https://newsapi.org/v2/top-headlines?country=in&apiKey={News_apikey}')
             news_headlines(url,News_apikey)
-            
+  
         else:
             chat(text) 
 
